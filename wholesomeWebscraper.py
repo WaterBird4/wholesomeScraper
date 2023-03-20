@@ -38,6 +38,7 @@ assert len(product_dict.values()) > 0
 def build_data_table(driver):
 	data_table = driver.find_element(By.CLASS_NAME, “pdpAttributesTable”)
 	rows = data_table.find_elements(By.TAG_NAME, “tr”)
+	# CHECK YOU HAVE DATA TO BUILD THE DICTIONARY WITH
 	assert len(rows) > 0
 	data_dict = {}
 	for val in range(0, len(rows)):
@@ -46,15 +47,15 @@ def build_data_table(driver):
 		data_dict[data_key] = data_value
 	return data_dict
 
-
+# RETRIEVE DATA FOR EACH PRODUCT AND BUILD DICTIONARY
 product_data_dict = {}
 for val in product_dict.keys():
 	goto_page = product_dict.get(val)
 	driver.get(goto_page)
-	wait = WebDriverWait(driver, 10)
+	wait = WebDriverWait(driver, 5)
 	data_dict = build_data_table(driver)
 	product_data_dict[val] = [goto_page, data_dict]
-	wait = WebDriverWait(driver, 10)
+	wait = WebDriverWait(driver, 5)
 
 # ———— save data to a file
 from datetime import datetime
