@@ -13,20 +13,27 @@ driver = webdriver.Chrome()
 url = “https://www.wholesome.co/shop/flower/“
 driver.get(url)
 
+#THERE IS AN AGE CHECK THAT HAPPENS THIS CLICKS THE BUTTON TO CONTINUE TO THE SITE
 elem = driver.find_element(By.CLASS_NAME, ‘button’)
 elem.send_keys(Keys.RETURN)
 
+
 products = driver.find_elements(By.CLASS_NAME, “productListItem”)
 
+# CHECK YOU HAVE AT LEAST 1 PRODUCT IN YOUR LIST OF PRODUCTS
 assert len(products) > 0
 
+# CREATE DICTIONARY OF PRODUCT URLS
 product_dict = {}
 count = 0
 For val in products:
 	new_url = val.find_element(By.TAG_NAME, ‘a’).get_attribute(‘href’)
 	product_dict[count] = new_url
 	count += 1
-
+# CHECK ALL PRODUCTS HAVE URLS
+# assert len(product_dict.values()) == len(products)
+# DO WE WANT IT TO FAIL IF ONE PRODUCT DOESN'T HAVE A URL OR WORK SO LONG AS WE HAVE AT LEAST 1 URL?
+assert len(product_dict.values()) > 0
 
 def build_data_table(driver):
 	data_table = driver.find_element(By.CLASS_NAME, “pdpAttributesTable”)
