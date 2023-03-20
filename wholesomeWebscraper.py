@@ -6,8 +6,10 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
+# To use safari you have to enable remote control in settings
+#driver = webdriver.Safari()
 
-driver = webdriver.Safari()
+driver = webdriver.Chrome()
 url = “https://www.wholesome.co/shop/flower/“
 driver.get(url)
 
