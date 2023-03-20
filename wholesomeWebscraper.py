@@ -28,6 +28,8 @@ product_dict = {}
 count = 0
 For val in products:
 	new_url = val.find_element(By.TAG_NAME, ‘a’).get_attribute(‘href’)
+	#product_name = new_url.rsplit('/')[-1]
+	#temp_data = [product_name, new_url]
 	product_dict[count] = new_url
 	count += 1
 # CHECK ALL PRODUCTS HAVE URLS
@@ -57,43 +59,26 @@ for val in product_dict.keys():
 	product_data_dict[val] = [goto_page, data_dict]
 	wait = WebDriverWait(driver, 5)
 
-# ———— save data to a file
-from datetime import datetime
-
-filename = 'product_data_' + datetime.today().strftime('%m_%d_%Y')+ '.txt'
-
-with open(filename, ‘w’) as f:
-	for k in product_data_dict.keys():
-		f.write(str(k) + “|” + str(product_data_dict.get(k)) + ‘,\n’)
-
-
 # ———————— pivot data
 import pandas as pd
-
-
-df = pd.DataFrame.from_dict(product_data_dict, orient='index')
-column_names = [‘url’, ‘data_dict’]
-df.columns = column_names
-
-
-column_names = ['Strain Type', 'THCa', 'Total THC', 'CBDa', 'Total CBD', 'Total CBC', 'Total CBG', 'Lot Expiration']
-initial_values = [0, 1, 2, 3, 4, 5, 6, 7]
-all_data = pd.DataFrame(data=[column_names, initial_values])
-all_data.column_names = column_names
-
-for k in product_data_dict.keys():
-	temp = pd.DataFrame.from_dict(product_data_dict.get(k)[1], orient='index’).transpose()
-	all_data = all_data.append(temp)
 
 all_data = pd.DataFrame()
 for val in range(0, len(product_data_dict.keys())):
 	temp = pd.DataFrame.from_dict(df.loc[val][‘data_dict’], orient=‘index’).transpose()
+	temp['product_name'] = product_data_dict.get(val)[0].rsplit('/')[-1]
 	all_data = all_data.append(temp, ignore_index=True)
+
+all_data.reset_index(inplace=True, drop=True)
+
+# ———— save data to a file
+from datetime import datetime
+
+filename = 'product_data_' + datetime.today().strftime('%m_%d_%Y')+ '.txt'
+with open(filename, ‘w’) as f:
+	all_data.to_csv(f, index=False)
+
 	
 
-for val in range(0, len(product_data_dict.keys())):
-	url = df.loc[val][‘url’]
-	all_data.at[val, ‘url’] = url
 
 
 
