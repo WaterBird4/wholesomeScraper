@@ -1,4 +1,3 @@
-
 # ———————— retrieve data
 
 from selenium import webdriver
@@ -10,15 +9,15 @@ from selenium.webdriver.support.wait import WebDriverWait
 #driver = webdriver.Safari()
 
 driver = webdriver.Chrome()
-url = “https://www.wholesome.co/shop/flower/“
+url = "https://www.wholesome.co/shop/flower/"
 driver.get(url)
 
 #THERE IS AN AGE CHECK THAT HAPPENS THIS CLICKS THE BUTTON TO CONTINUE TO THE SITE
-elem = driver.find_element(By.CLASS_NAME, ‘button’)
+elem = driver.find_element(By.CLASS_NAME, 'button')
 elem.send_keys(Keys.RETURN)
 
 
-products = driver.find_elements(By.CLASS_NAME, “productListItem”)
+products = driver.find_elements(By.CLASS_NAME, "productListItem")
 
 # CHECK YOU HAVE AT LEAST 1 PRODUCT IN YOUR LIST OF PRODUCTS
 assert len(products) > 0
@@ -26,8 +25,8 @@ assert len(products) > 0
 # CREATE DICTIONARY OF PRODUCT URLS
 product_dict = {}
 count = 0
-For val in products:
-	new_url = val.find_element(By.TAG_NAME, ‘a’).get_attribute(‘href’)
+for val in products:
+	new_url = val.find_element(By.TAG_NAME, 'a').get_attribute('href')
 	#product_name = new_url.rsplit('/')[-1]
 	#temp_data = [product_name, new_url]
 	product_dict[count] = new_url
@@ -38,14 +37,14 @@ For val in products:
 assert len(product_dict.values()) > 0
 
 def build_data_table(driver):
-	data_table = driver.find_element(By.CLASS_NAME, “pdpAttributesTable”)
-	rows = data_table.find_elements(By.TAG_NAME, “tr”)
+	data_table = driver.find_element(By.CLASS_NAME, "pdpAttributesTable")
+	rows = data_table.find_elements(By.TAG_NAME, "tr")
 	# CHECK YOU HAVE DATA TO BUILD THE DICTIONARY WITH
 	assert len(rows) > 0
 	data_dict = {}
 	for val in range(0, len(rows)):
-		data_key = rows[val].find_element(By.TAG_NAME, ’th’).text
-		data_value = rows[val].find_element(By.TAG_NAME, ‘td’).text
+		data_key = rows[val].find_element(By.TAG_NAME, "th").text
+		data_value = rows[val].find_element(By.TAG_NAME, "td").text
 		data_dict[data_key] = data_value
 	return data_dict
 
@@ -62,10 +61,12 @@ for val in product_dict.keys():
 # ———————— pivot data
 import pandas as pd
 
+
+df = pd.DataFrame.from_dict(product_data_dict, orient='index')
 all_data = pd.DataFrame()
 for val in range(0, len(product_data_dict.keys())):
-	temp = pd.DataFrame.from_dict(df.loc[val][‘data_dict’], orient=‘index’).transpose()
-	temp['product_name'] = product_data_dict.get(val)[0].rsplit('/')[-1]
+	temp = pd.DataFrame.from_dict(df.loc[val][1], orient="index").transpose()
+	temp["product_name"] = product_data_dict.get(val)[0].rsplit('/')[-1]
 	all_data = all_data.append(temp, ignore_index=True)
 
 all_data.reset_index(inplace=True, drop=True)
@@ -73,12 +74,6 @@ all_data.reset_index(inplace=True, drop=True)
 # ———— save data to a file
 from datetime import datetime
 
-filename = 'product_data_' + datetime.today().strftime('%m_%d_%Y')+ '.txt'
-with open(filename, ‘w’) as f:
+filename = "product_data_" + datetime.today().strftime("%m_%d_%Y")+ ".txt"
+with open(filename, "w") as f:
 	all_data.to_csv(f, index=False)
-
-	
-
-
-
-
